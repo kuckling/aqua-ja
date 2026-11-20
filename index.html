@@ -949,7 +949,7 @@ function buildPDF(rep){
 
   newPage();
   rect(0,0,W,64,[10,98,108]);
-  txt('Aqua'ja - Reporte de tamizaje de agua',M,15,17,true,[255,255,255]);
+  txt('Aqua\'ja - Reporte de tamizaje de agua',M,15,17,true,[255,255,255]);
   txt('Fecha: '+new Date(rep.ts).toLocaleString('es-GT')+'   |   Orientación comunitaria; no sustituye el laboratorio',M,40,9,false,[225,240,242]);
   y=80;
 
@@ -1023,7 +1023,7 @@ function buildPDF(rep){
   y+=6;
   para('Orientación comunitaria de tamizaje. El microscopio no detecta bacterias, virus ni sustancias químicas; un resultado sin hallazgos no garantiza que el agua sea potable. No sustituye el análisis de laboratorio. Los umbrales son orientativos: verifique con la norma COGUANOR vigente y el MSPAS.',{size:8.5,color:[91,107,117]});
 
-  pages.forEach((pg,i)=>{P=pg; txt('Aqua'ja v2.2  ·  Página '+(i+1)+' de '+pages.length,M,H-30,8,false,[91,107,117]);});
+  pages.forEach((pg,i)=>{P=pg; txt('Aqua\'ja v2.2  ·  Página '+(i+1)+' de '+pages.length,M,H-30,8,false,[91,107,117]);});
 
   const objs=[], add=b=>{objs.push(b); return objs.length;};
   add(''); add('');
