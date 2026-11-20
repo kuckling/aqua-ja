@@ -26,6 +26,7 @@ Aqua'ja es una aplicación de una sola página (un archivo HTML, sin instalació
 
 - **🌐 Demo en vivo:** https://kuckling.github.io/aqua-ja/ (abre `index.html` directo en el navegador).
 - **💻 En local:** descarga `index.html` y ábrelo en cualquier navegador moderno. No necesita servidor ni instalación.
+- **📖 Instructivo paso a paso:** [instructivo/INSTRUCTIVO.md](instructivo/INSTRUCTIVO.md) — cómo calibrar y analizar, con imágenes de práctica para aprender sin microscopio y un [ejemplo del reporte PDF](instructivo/ejemplos/reporte-ejemplo.pdf) que descarga la app. Las imágenes de práctica fueron generadas con IA y sus reglas de medición son solo para fines didácticos, no son fotos reales de microscopio.
 
 ## ⚠️ Importante
 
