@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aqua'ja v2.2 | Tamizaje comunitario de agua</title>
+<style>
+:root{
+  --bg:#f3f6f8; --card:#ffffff; --ink:#14232b; --muted:#5b6b75; --line:#d9e1e6;
+  --brand:#0d7f8c; --brand-d:#0a626c;
+  --red:#b3261e; --red-bg:#fdecea; --amber:#8a5a00; --amber-bg:#fff4d6;
+  --green:#1b6e3c; --green-bg:#e3f5ea; --gray:#44525b; --gray-bg:#e9eef1;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--brand-d);color:#fff;padding:14px 16px}
+header h1{margin:0;font-size:1.25rem}
+header p{margin:2px 0 0;font-size:.85rem;opacity:.9}
+main{max-width:860px;margin:0 auto;padding:12px 12px 40px;display:grid;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card h2{margin:0 0 4px;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.step{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-size:.85rem;flex:none}
+.hint{color:var(--muted);font-size:.88rem;margin:2px 0 10px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+label{display:block;font-size:.88rem;font-weight:600;margin-bottom:3px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #b9c6cd;border-radius:10px;font:inherit;background:#fff;color:var(--ink)}
+input[type=checkbox]{width:auto;margin-right:8px;transform:scale(1.25)}
+input[type=range]{padding:0}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:11px 14px;background:var(--brand);color:#fff;cursor:pointer;min-height:44px}
+button.sec{background:#fff;color:var(--brand-d);border:1.5px solid var(--brand)}
+button.danger{background:#fff;color:var(--red);border:1.5px solid var(--red)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.seg{display:flex;gap:0;border:1.5px solid var(--brand);border-radius:10px;overflow:hidden}
+.seg button{flex:1;border-radius:0;background:#fff;color:var(--brand-d)}
+.seg button.on{background:var(--brand);color:#fff}
+.canvas-wrap{position:relative;background:#0b1620;border-radius:10px;overflow:hidden;margin-top:8px;touch-action:manipulation}
+canvas{display:block;width:100%;height:auto}
+.empty{color:#9fb0ba;text-align:center;padding:60px 10px;font-size:.95rem}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.78rem;font-weight:700}
+.note{background:var(--gray-bg);border-radius:10px;padding:10px;font-size:.88rem}
+.warn{background:var(--amber-bg);color:#5c3d00;border-radius:10px;padding:10px;font-size:.88rem;margin:6px 0}
+.bad{background:var(--red-bg);color:#7a1610;border-radius:10px;padding:10px;font-size:.88rem;margin:6px 0}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:10px 0}
+.metric{background:var(--bg);border-radius:10px;padding:8px 10px}
+.metric b{display:block;font-size:1.25rem}
+.metric span{font-size:.76rem;color:var(--muted)}
+.bars .bar{display:grid;grid-template-columns:160px 1fr 34px;gap:8px;align-items:center;font-size:.84rem;margin:4px 0}
+@media(max-width:560px){.bars .bar{grid-template-columns:110px 1fr 28px;font-size:.78rem}}
+.bars .track{background:var(--bg);border-radius:6px;height:14px;overflow:hidden}
+.bars .fill{height:100%;border-radius:6px}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.verdict{border-radius:14px;padding:16px;border:2px solid}
+.verdict.red{background:var(--red-bg);border-color:var(--red);color:#5f130e}
+.verdict.amber{background:var(--amber-bg);border-color:#d9a21b;color:#4d3300}
+.verdict.green{background:var(--green-bg);border-color:var(--green);color:#0f3d21}
+.verdict.gray{background:var(--gray-bg);border-color:#9aa9b2;color:var(--gray)}
+.verdict h3{margin:0 0 6px;font-size:1.15rem}
+.verdict ul{margin:6px 0 6px 18px;padding:0}
+.verdict .bd{float:right}
+.red .bd{background:var(--red);color:#fff}.amber .bd{background:#d9a21b;color:#2b1d00}.green .bd{background:var(--green);color:#fff}.gray .bd{background:#6d7d87;color:#fff}
+.fieldchips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{background:var(--gray-bg);border-radius:99px;padding:3px 10px;font-size:.82rem}
+.hist-item{border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0;display:grid;grid-template-columns:72px 1fr;gap:10px}
+.hist-item img{width:72px;height:54px;object-fit:cover;border-radius:8px;background:#0b1620}
+.hist-item .ph{width:72px;height:54px;border-radius:8px;background:var(--gray-bg)}
+.hist-item small{color:var(--muted)}
+details{border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:#fff}
+summary{cursor:pointer;font-weight:700}
+.disclaimer{font-size:.84rem;color:var(--muted);border-top:1px dashed var(--line);margin-top:10px;padding-top:8px}
+footer{max-width:860px;margin:0 auto;padding:0 14px 30px;color:var(--muted);font-size:.78rem;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <h1>Aqua'ja <small style="font-weight:400">v2.2</small></h1>
+  <p>Tamizaje comunitario de agua con microscopio de celular. Uso educativo y de orientación.</p>
+</header>
+
+<main>
+
+<div class="note"><b>Importante:</b> esta herramienta ayuda a detectar problemas visibles (turbidez, partículas, filamentos). <b>No detecta bacterias, virus ni sustancias químicas.</b> Un resultado sin hallazgos <b>no garantiza</b> que el agua sea potable. La prueba más importante es la de coliformes / <i>E. coli</i>.</div>
+
+<!-- PASO 1 -->
+<section class="card" id="s1">
+  <h2><span class="step">1</span> Foto del microscopio</h2>
+  <p class="hint">Tome o suba una foto. Use siempre el mismo celular, la misma ampliación y luz uniforme.</p>
+  <div class="row">
+    <button id="btnCam">Tomar foto</button>
+    <button id="btnGal" class="sec">Elegir archivo</button>
+    <input type="file" id="fileCam" accept="image/*" capture="environment" hidden>
+    <input type="file" id="fileGal" accept="image/*" hidden>
+  </div>
+  <div class="seg" role="group" aria-label="Modo">
+    <button id="modeAnalyze" class="on">Analizar muestra</button>
+    <button id="modeCal">Calibrar con regla</button>
+  </div>
+  <div class="canvas-wrap">
+    <canvas id="cv" width="640" height="480"></canvas>
+    <div id="emptyMsg" class="empty" style="position:absolute;inset:0;display:grid;place-items:center">Aún no hay imagen</div>
+  </div>
+  <div class="row"><label style="margin:0"><input type="checkbox" id="chkMask" checked> Mostrar partículas detectadas</label></div>
+  <div id="legend" class="hint"></div>
+</section>
+
+<!-- PASO 2 -->
+<section class="card" id="s2">
+  <h2><span class="step">2</span> Calibración (obligatoria)</h2>
+  <p class="hint">Guarde un perfil por cada ampliación (por ejemplo 100x y 250x) y elíjalo antes de analizar. Cada perfil recuerda el ancho real del campo, así no calibra en cada sesión. Use un perfil distinto si cambia de celular o de soporte.</p>
+  <div id="calStatus" class="note">Sin calibrar</div>
+  <div class="grid2" style="margin-top:8px">
+    <div><label for="profSel">Perfil de calibración activo</label><select id="profSel"></select></div>
+    <div style="align-self:end"><button id="btnProfDel" class="danger">Borrar este perfil</button></div>
+  </div>
+  <details style="margin-top:8px">
+    <summary>Crear o actualizar un perfil (regla micrométrica o cuadrícula Neubauer)</summary>
+    <div class="grid2" style="margin-top:8px">
+      <div><label for="calName">Nombre del perfil</label><input id="calName" list="profNames" type="text" maxlength="30" placeholder="ej. 250x"><datalist id="profNames"><option value="100x"><option value="250x"></datalist></div>
+      <div class="hint" style="align-self:end;margin:0">Si el nombre ya existe, se reemplaza.</div>
+    </div>
+    <ol style="margin:8px 0 8px 18px;padding:0;font-size:.92rem">
+      <li>Cargue en el paso 1 la foto de la regla (o de la cuadrícula) tomada con esa misma ampliación.</li>
+      <li>Toque el botón <b>Calibrar con regla</b>.</li>
+      <li>Toque dos puntos sobre la imagen cuya distancia real conozca (por ejemplo, 5 divisiones de la regla).</li>
+      <li>Escriba esa distancia en micras (µm) y guarde el perfil. En una cuadrícula Neubauer, los cuadros pequeños centrales miden 50 µm.</li>
+    </ol>
+    <div class="grid2">
+      <div><label for="calKnown">Distancia real entre los dos puntos (µm)</label><input id="calKnown" type="number" min="0.1" step="any" inputmode="decimal" placeholder="ej. 100"></div>
+      <div style="align-self:end"><button id="btnCalSave" class="sec" disabled>Guardar perfil</button></div>
+    </div>
+    <div id="calPtInfo" class="hint">Puntos marcados: 0 de 2</div>
+    <div class="grid2" style="margin-top:6px">
+      <div><label for="calManual">O escriba el ancho total del campo (µm)</label><input id="calManual" type="number" min="1" step="any" inputmode="decimal" placeholder="si ya lo conoce"></div>
+      <div style="align-self:end"><button id="btnCalManual" class="sec">Guardar perfil con este ancho</button></div>
+    </div>
+  </details>
+</section>
+
+<!-- PASO 3 -->
+<section class="card" id="s3">
+  <h2><span class="step">3</span> Análisis de la imagen</h2>
+  <p class="hint">Elija el motor de análisis. <b>Local</b> funciona sin internet. <b>SAM 3.1</b> (Meta) detecta los objetos por internet y el programa mide su forma. Analice varios campos de la misma muestra, mínimo 3, idealmente 5.</p>
+  <div class="seg" role="group" aria-label="Motor de análisis">
+    <button id="engLocal" class="on">Local (sin internet)</button>
+    <button id="engSam">SAM 3.1 (con internet)</button>
+  </div>
+  <div id="netStatus" class="hint" style="margin:6px 0 0"></div>
+  <div id="samBox" style="display:none;margin-top:8px">
+    <div class="warn">La foto se envía por internet a los servidores de Meta. Cada análisis gasta saldo de su cuenta de API (precio publicado: US$2.50 por 1,000 imágenes, por cada concepto). Su clave queda en este dispositivo si la recuerda: use una clave con límite de gasto y no la comparta. No envíe fotos con personas ni datos privados.</div>
+    <div class="grid2">
+      <div><label for="samKey">Clave de API de Meta</label><input id="samKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="pegue su clave"></div>
+      <div style="align-self:end"><label style="margin:0"><input type="checkbox" id="samRemember"> Recordar la clave en este dispositivo</label></div>
+      <div><label for="samConcepts">Qué buscar (una palabra por concepto, en inglés, separadas por coma; máx. 3)</label><input id="samConcepts" type="text" value="particle" placeholder="particle, fiber, bubble"></div>
+      <div><label for="samConf">Confianza mínima: <span id="samConfVal">0.5</span></label><input id="samConf" type="range" min="0.1" max="0.9" step="0.05" value="0.5"></div>
+    </div>
+    <details style="margin-top:6px"><summary>Avanzado</summary>
+      <label for="samUrl" style="margin-top:6px">URL del servicio</label><input id="samUrl" type="text" value="https://api.meta.ai/v1/responses" autocapitalize="off" spellcheck="false">
+      <div class="hint">Cámbiela solo si usa su propio servidor intermedio de confianza: ese servidor recibirá su clave y las fotos.</div>
+    </details>
+    <div class="hint">En modo SAM, la sensibilidad y el tipo de partículas de abajo solo se usan para medir la forma dentro de cada objeto que SAM encontró. Los objetos sin forma medible se marcan como "aproximados" y no se usan para clasificar fibras ni esferas.</div>
+  </div>
+  <div class="grid2">
+    <div>
+      <label for="sens">Sensibilidad: <span id="sensVal">5</span></label>
+      <input id="sens" type="range" min="1" max="10" value="5">
+    </div>
+    <div>
+      <label for="pol">Tipo de partículas</label>
+      <select id="pol">
+        <option value="dark">Oscuras sobre fondo claro (normal)</option>
+        <option value="light">Claras sobre fondo oscuro</option>
+        <option value="both">Ambas</option>
+      </select>
+    </div>
+    <div>
+      <label for="minD">Tamaño mínimo a contar (µm)</label>
+      <input id="minD" type="number" min="1" step="0.5" value="3" inputmode="decimal">
+    </div>
+    <div>
+      <label for="depth">Profundidad de la muestra (µm, opcional)</label>
+      <input id="depth" type="number" min="1" step="any" inputmode="decimal" placeholder="Neubauer: 100">
+    </div>
+  </div>
+  <div class="row"><button id="btnAnalyze" disabled>Analizar esta imagen</button></div>
+  <div id="analysisOut"></div>
+  <div id="addBox" style="display:none">
+    <div class="row"><label style="margin:0"><input type="checkbox" id="chkOk"> Confirmo que la imagen está enfocada, con luz uniforme y sin burbujas de aire bajo el cubreobjetos</label></div>
+    <div class="row"><button id="btnAddField" disabled>Agregar este campo a la muestra</button></div>
+  </div>
+  <div id="fieldsBox"></div>
+</section>
+
+<!-- PASO 4 -->
+<section class="card" id="s4">
+  <h2><span class="step">4</span> Pruebas complementarias</h2>
+  <p class="hint">Estas pruebas cubren lo que el microscopio no puede ver. Llene las que tenga. La de coliformes es la más importante.</p>
+  <div class="grid2">
+    <div><label for="srcName">Nombre de la fuente / lugar</label><input id="srcName" type="text" placeholder="ej. Tanque comunal, aldea ..."></div>
+    <div><label for="srcType">Tipo de fuente</label>
+      <select id="srcType">
+        <option value="red">Red / tanque con cloro</option>
+        <option value="pozo">Pozo</option>
+        <option value="nacimiento">Nacimiento / manantial</option>
+        <option value="superficial">Río / lago / quebrada</option>
+        <option value="lluvia">Agua de lluvia</option>
+        <option value="otra">Otra</option>
+      </select></div>
+    <div><label for="tColi">Coliformes / <i>E. coli</i> (kit)</label>
+      <select id="tColi"><option value="none">No realizada</option><option value="absent">Ausente</option><option value="present">Presente</option></select></div>
+    <div><label for="tCl">Cloro residual libre (mg/L)</label><input id="tCl" type="number" step="any" min="0" inputmode="decimal" placeholder="tira reactiva"></div>
+    <div><label for="tPh">pH</label><input id="tPh" type="number" step="0.1" min="0" max="14" inputmode="decimal" placeholder="tira o medidor"></div>
+    <div><label for="tTurb">Turbidez (NTU)</label><input id="tTurb" type="number" step="any" min="0" inputmode="decimal" placeholder="sensor o tubo"></div>
+  </div>
+  <div class="row">
+    <button id="btnGPS" class="sec">Guardar mi ubicación</button>
+    <span id="gpsOut" class="hint" style="margin:0">Sin ubicación</span>
+  </div>
+  <div><label for="equip">Equipo usado</label><input id="equip" type="text" value="Carson MicroFlip MP-250 + celular"></div>
+  <div style="margin-top:8px"><label for="notes">Notas</label><textarea id="notes" rows="2" placeholder="Hora, clima reciente, olor, color, etc."></textarea></div>
+</section>
+
+<!-- PASO 5 -->
+<section class="card" id="s5">
+  <h2><span class="step">5</span> Resultado y recomendaciones</h2>
+  <div id="verdict"></div>
+  <div class="row"><button id="btnSave">Guardar muestra en el historial</button><button id="btnPDF" class="sec">Descargar reporte PDF</button></div>
+</section>
+
+<!-- HISTORIAL -->
+<section class="card" id="s6">
+  <h2>Historial y validación</h2>
+  <p class="hint">Se guarda solo en este celular o computadora. Si luego recibe el resultado de laboratorio, anótelo: así se mide qué tan confiable es esta herramienta.</p>
+  <div id="valStats" class="note" style="display:none"></div>
+  <div class="row">
+    <button id="btnCSV" class="sec">Exportar CSV</button>
+    <button id="btnJSON" class="sec">Exportar JSON</button>
+    <button id="btnClearAll" class="danger">Borrar historial</button>
+  </div>
+  <div id="histList"></div>
+</section>
+
+<details>
+  <summary>Guía rápida: cómo tomar buenas imágenes</summary>
+  <ul style="margin:8px 0 8px 18px;padding:0;font-size:.92rem">
+    <li>Limpie el lente y el portaobjetos. Use una gota pequeña con cubreobjetos, sin burbujas.</li>
+    <li>Luz uniforme y sin reflejos. Mantenga el celular fijo; evite mover el equipo.</li>
+    <li>Enfoque con un borde de partícula o del cubreobjetos. Un campo vacío no sirve para enfocar.</li>
+    <li>Tome al menos 3 a 5 campos distintos de la misma muestra.</li>
+    <li>Calibre de nuevo si cambia el zoom o el soporte del celular.</li>
+    <li>A 250x el límite práctico es cerca de 1 µm: las bacterias individuales no se pueden identificar.</li>
+  </ul>
+</details>
+
+<details>
+  <summary>Qué hacer si el resultado es de precaución o alerta</summary>
+  <ul style="margin:8px 0 8px 18px;padding:0;font-size:.92rem">
+    <li>Filtrar con tela limpia doblada o un filtro de arena/cerámica baja la turbidez, pero <b>no elimina microbios</b>.</li>
+    <li>Después de filtrar, hervir 1 minuto a hervor fuerte, o desinfectar con cloro siguiendo las instrucciones del producto o del centro de salud (MSPAS).</li>
+    <li>Avise al comité de agua y al centro de salud si hay coliformes presentes.</li>
+    <li>Repita las pruebas después de corregir y después de lluvias fuertes.</li>
+  </ul>
+</details>
+
+</main>
+
+<footer>
+  Aqua'ja v2.2 · Motor local (algoritmo clásico, sin internet) y motor SAM 3.1 de Meta (con internet).<br>
+  Iniciativa de Ciencia Abierta · Gualán, Zacapa, Guatemala · Herramienta de tamizaje educativo, no sustituye el análisis de laboratorio.
+</footer>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN (valores orientativos; verifique con la norma vigente
+   COGUANOR NTG 29001 y las indicaciones del MSPAS antes de uso oficial)
+   ===================================================================== */
+const CONFIG = {
+  maxWorkDim: 1000,        // px máximos de trabajo
+  coberturaMedia: 1,       // % del campo cubierto por partículas
+  coberturaAlta: 5,
+  ph: [6.5, 8.5],          // rango orientativo (OMS)
+  turbNTU: 5,              // orientativo (OMS: ideal <1 para desinfectar)
+  clMin: 0.2,              // mg/L cloro libre mínimo en red clorada (orientativo)
+  clMax: 1.0,              // mg/L cloro libre alto (orientativo)
+  minFieldsGreen: 3,       // campos mínimos para un resultado sin hallazgos
+  redondasMin: 3           // nº de estructuras redondas 4-15 µm para avisar
+};
+
+const CATS = {
+  fina:      {label:'Partículas finas (<5 µm)',        color:[230,159,0],  hint:'arcilla, limo, polvo'},
+  irregular: {label:'Partículas irregulares (5-40 µm)',color:[213,94,0],   hint:'sedimento, materia orgánica'},
+  agregado:  {label:'Agregados grandes (>40 µm)',      color:[204,121,167],hint:'flóculos, restos'},
+  fibra:     {label:'Fibras / filamentos',             color:[0,114,178],  hint:'fibras, algas filamentosas u hongos'},
+  esfera:    {label:'Esferas lisas (>15 µm)',          color:[86,180,233], hint:'burbujas de aire o gotas'},
+  redonda:   {label:'Estructuras redondas (4-15 µm)',  color:[0,158,115],  hint:'no identificables: algas, polen, levaduras u otros'},
+  aprox:     {label:'Detectadas por SAM (forma aproximada)', color:[120,90,200], hint:'solo caja: sin forma medida; no se usan para fibras ni esferas'},
+  borde:     {label:'Cortadas por el borde (no se cuentan)', color:[150,150,150], hint:''},
+  nocal:     {label:'Sin calibrar',                    color:[150,150,150], hint:''}
+};
+const CAT_ORDER = ['fina','irregular','agregado','fibra','esfera','redonda','aprox'];
+const CAT_KEYS = Object.keys(CATS);
+
+/* =====================================================================
+   NÚCLEO DE ANÁLISIS (sin DOM)
+   ===================================================================== */
+// ==CORE-START==
+function boxBlur(src,w,h,r){
+  const tmp=new Float32Array(w*h), out=new Float32Array(w*h), k=2*r+1;
+  for(let y=0;y<h;y++){
+    const row=y*w; let acc=0;
+    for(let i=-r;i<=r;i++) acc+=src[row+Math.min(w-1,Math.max(0,i))];
+    for(let x=0;x<w;x++){
+      tmp[row+x]=acc/k;
+      acc+=src[row+Math.min(w-1,x+r+1)]-src[row+Math.max(0,x-r)];
+    }
+  }
+  for(let x=0;x<w;x++){
+    let acc=0;
+    for(let i=-r;i<=r;i++) acc+=tmp[Math.min(h-1,Math.max(0,i))*w+x];
+    for(let y=0;y<h;y++){
+      out[y*w+x]=acc/k;
+      acc+=tmp[Math.min(h-1,y+r+1)*w+x]-tmp[Math.max(0,y-r)*w+x];
+    }
+  }
+  return out;
+}
+
+function labelRegions(mask,w,h,target,eight){
+  const N=w*h, labels=new Int32Array(N), stack=new Int32Array(N), comps=[null];
+  let id=0;
+  for(let s=0;s<N;s++){
+    if(mask[s]!==target||labels[s]) continue;
+    id++; let sp=0; stack[sp++]=s; labels[s]=id;
+    let area=0,sx=0,sy=0,sxx=0,syy=0,sxy=0,minx=w,maxx=0,miny=h,maxy=0,border=false;
+    while(sp){
+      const p=stack[--sp], y=(p/w)|0, x=p-y*w;
+      area++; sx+=x; sy+=y; sxx+=x*x; syy+=y*y; sxy+=x*y;
+      if(x<minx)minx=x; if(x>maxx)maxx=x; if(y<miny)miny=y; if(y>maxy)maxy=y;
+      if(x===0||y===0||x===w-1||y===h-1) border=true;
+      for(let dy=-1;dy<=1;dy++){
+        const ny=y+dy; if(ny<0||ny>=h) continue;
+        for(let dx=-1;dx<=1;dx++){
+          if(!dx&&!dy) continue;
+          if(!eight&&dx&&dy) continue;
+          const nx=x+dx; if(nx<0||nx>=w) continue;
+          const q=ny*w+nx;
+          if(mask[q]===target&&!labels[q]){labels[q]=id; stack[sp++]=q;}
+        }
+      }
+    }
+    comps.push({area,sx,sy,sxx,syy,sxy,minx,maxx,miny,maxy,border});
+  }
+  return {labels,comps};
+}
+
+function classify(o){
+  const d=o.dEqUm, circ=o.circ, asp=o.asp, major=o.majorUm;
+  if(asp>=3.5 && major>=15) return 'fibra';
+  if(circ>=0.85 && asp<=1.3 && d>=15) return 'esfera';
+  if(circ>=0.85 && asp<=1.3 && d>=4) return 'redonda';
+  if(d<5) return 'fina';
+  if(d>=40) return 'agregado';
+  return 'irregular';
+}
+
+function segmentImage(rgba,w,h,P){
+  const N=w*h, gray=new Float32Array(N); let sum=0;
+  for(let i=0,j=0;i<N;i++,j+=4){
+    const g=0.299*rgba[j]+0.587*rgba[j+1]+0.114*rgba[j+2]; gray[i]=g; sum+=g;
+  }
+  const mean=sum/N; let vs=0;
+  for(let i=0;i<N;i++){const t=gray[i]-mean; vs+=t*t;}
+  const std=Math.sqrt(vs/N);
+
+  // enfoque (varianza del laplaciano)
+  let ls=0,lq=0,lc=0;
+  for(let y=1;y<h-1;y++) for(let x=1;x<w-1;x++){
+    const c=y*w+x, l=4*gray[c]-gray[c-1]-gray[c+1]-gray[c-w]-gray[c+w];
+    ls+=l; lq+=l*l; lc++;
+  }
+  const lapVar=lc? lq/lc-(ls/lc)*(ls/lc) : 0;
+
+  // corrección de campo (flat-field): fondo estimado con desenfoque grande
+  const r=Math.max(15,Math.round(Math.min(w,h)/10));
+  const bg=boxBlur(boxBlur(gray,w,h,r),w,h,r);
+  const d=new Float32Array(N);
+  for(let i=0;i<N;i++) d[i]=gray[i]-bg[i];
+
+  // ruido robusto (MAD)
+  const step=Math.max(1,Math.floor(N/40000));
+  const samp=new Float32Array(Math.ceil(N/step)); let k=0;
+  for(let i=0;i<N;i+=step) samp[k++]=Math.abs(d[i]);
+  const arr=samp.slice(0,k).sort();
+  const sigma=1.4826*arr[(k/2)|0];
+  const T=Math.max(8,sigma*(7-0.5*P.sens));
+
+  const mask=new Uint8Array(N);
+  for(let i=0;i<N;i++){
+    const v=d[i];
+    if(P.polarity==='light') mask[i]= v>T?1:0;
+    else if(P.polarity==='both') mask[i]= Math.abs(v)>T?1:0;
+    else mask[i]= v<-T?1:0;
+  }
+
+  // relleno de huecos pequeños (centros claros de burbujas/células)
+  const bgL=labelRegions(mask,w,h,0,false), maxHole=Math.round(N*0.002);
+  const fill=new Uint8Array(bgL.comps.length);
+  for(let c=1;c<bgL.comps.length;c++){const cc=bgL.comps[c]; if(!cc.border&&cc.area<=maxHole) fill[c]=1;}
+  for(let i=0;i<N;i++) if(!mask[i]&&fill[bgL.labels[i]]) mask[i]=1;
+
+  const fg=labelRegions(mask,w,h,1,true), L=fg.labels;
+  const edges=new Int32Array(fg.comps.length);
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    const i=y*w+x, l=L[i]; if(!l) continue;
+    let e=0;
+    if(x===0||L[i-1]!==l)e++; if(x===w-1||L[i+1]!==l)e++;
+    if(y===0||L[i-w]!==l)e++; if(y===h-1||L[i+w]!==l)e++;
+    edges[l]+=e;
+  }
+
+  const px=P.pxPerUm||null;
+  const minAreaPx=Math.max(10, px? Math.PI*Math.pow(P.minDiamUm*px/2,2) : 12);
+  const kept=[]; let covPx=0;
+  for(let l=1;l<fg.comps.length;l++){
+    const c=fg.comps[l]; if(c.area<minAreaPx) continue;
+    covPx+=c.area;
+    const cx=c.sx/c.area, cy=c.sy/c.area;
+    const vx=c.sxx/c.area-cx*cx+1/12, vy=c.syy/c.area-cy*cy+1/12, cxy=c.sxy/c.area-cx*cy;
+    const tr=(vx+vy)/2, disc=Math.sqrt(((vx-vy)/2)*((vx-vy)/2)+cxy*cxy);
+    const l1=tr+disc, l2=Math.max(tr-disc,1e-6);
+    const per=Math.PI/4*edges[l];
+    const o={
+      id:l, area:c.area, cx, cy, border:c.border,
+      asp:Math.sqrt(l1/l2), circ:Math.min(1,4*Math.PI*c.area/(per*per)),
+      dEqPx:2*Math.sqrt(c.area/Math.PI), majorPx:4*Math.sqrt(l1)
+    };
+    if(px){o.dEqUm=o.dEqPx/px; o.majorUm=o.majorPx/px; o.cat=c.border?'borde':classify(o);}
+    else o.cat=c.border?'borde':'nocal';
+    kept.push(o);
+  }
+
+  const counts={}; CAT_KEYS.forEach(c=>counts[c]=0);
+  let nParticles=0;
+  kept.forEach(o=>{counts[o.cat]++; if(o.cat!=='borde'&&o.cat!=='nocal') nParticles++;});
+  const coveragePct=covPx/N*100;
+
+  const issues=[], warns=[];
+  if(mean<40) issues.push('La imagen está muy oscura. Aumente la luz y repita.');
+  if(mean>245) issues.push('La imagen está sobreexpuesta (muy brillante). Baje la luz y repita.');
+  if(coveragePct>35||fg.comps.length>3000) issues.push('La imagen está saturada de objetos o con mucho ruido. Diluya la muestra, baje la sensibilidad o repita la foto.');
+  if(!px) issues.push('Falta la calibración: sin ella no se pueden medir tamaños.');
+  if(lapVar<8&&coveragePct>0.5) warns.push('Posible desenfoque: los bordes se ven poco nítidos.');
+  if(sigma>12) warns.push('Iluminación irregular o ruido alto en la imagen.');
+
+  return {w,h,labels:L,kept,counts,nParticles,coveragePct,mean,std,lapVar,sigma,T,
+          pxPerUm:px, fieldWidthUm:px? w/px:null, fieldAreaUm2:px? (w*h)/(px*px):null,
+          issues,warns,valid:issues.length===0};
+}
+// ==CORE-END==
+
+/* =====================================================================
+   ALMACENAMIENTO LOCAL
+   ===================================================================== */
+const KEY_CAL='aquametrix.cal.v2', KEY_HIST='aquametrix.hist.v2', KEY_SET='aquametrix.set.v2', KEY_PROF='aquametrix.profiles.v21', KEY_PROF_ACTIVE='aquametrix.profactive.v21', KEY_SAMOK='aquametrix.samok.v22';
+const mem={};
+const store={
+  get(k,def){try{const v=localStorage.getItem(k); return v?JSON.parse(v):def;}catch(e){return mem[k]!==undefined?mem[k]:def;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){mem[k]=v;return false;}}
+};
+
+/* =====================================================================
+   ESTADO Y ELEMENTOS
+   ===================================================================== */
+const $=id=>document.getElementById(id);
+const cv=$('cv'), ctx=cv.getContext('2d',{willReadFrequently:true});
+const state={base:null, overlay:null, result:null, mode:'analyze', calPts:[], cal:null, profiles:[],
+             fields:[], gps:null};
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmt(n,d=1){return (n==null||isNaN(n))?'-':Number(n).toFixed(d);}
+
+/* ---------- Imagen ---------- */
+function loadFile(file){
+  if(!file) return;
+  const url=URL.createObjectURL(file), img=new Image();
+  img.onload=()=>{setImage(img); URL.revokeObjectURL(url);};
+  img.onerror=()=>{alert('No se pudo abrir la imagen.'); URL.revokeObjectURL(url);};
+  img.src=url;
+}
+function setImage(img){
+  const s=Math.min(1,CONFIG.maxWorkDim/Math.max(img.naturalWidth,img.naturalHeight));
+  const w=Math.max(1,Math.round(img.naturalWidth*s)), h=Math.max(1,Math.round(img.naturalHeight*s));
+  cv.width=w; cv.height=h; ctx.drawImage(img,0,0,w,h);
+  state.base=ctx.getImageData(0,0,w,h); state.result=null; state.overlay=null; state.calPts=[];
+  $('emptyMsg').style.display='none';
+  $('btnAnalyze').disabled=false;
+  $('analysisOut').innerHTML=''; $('addBox').style.display='none'; $('chkOk').checked=false;
+  updateCalUI(); redraw();
+}
+
+function pxPerUmNow(){return (state.cal&&state.base)? state.base.width/state.cal.fieldWidthUm : null;}
+
+function redraw(){
+  if(!state.base){ctx.clearRect(0,0,cv.width,cv.height);return;}
+  if(state.result&&state.overlay&&$('chkMask').checked) ctx.putImageData(state.overlay,0,0);
+  else ctx.putImageData(state.base,0,0);
+  drawCalMarks(); drawScaleBar();
+}
+function drawScaleBar(){
+  const px=pxPerUmNow(); if(!px) return;
+  const fw=state.cal.fieldWidthUm, opts=[5,10,20,50,100,200,500,1000];
+  let nice=opts[0]; for(const o of opts) if(o<=fw*0.25) nice=o;
+  const len=nice*px, fs=Math.max(12,Math.round(cv.width/45)), pad=Math.round(fs*0.6);
+  const bx=pad, by=cv.height-pad-fs-8;
+  ctx.fillStyle='rgba(0,0,0,.6)';
+  ctx.fillRect(bx-4,by-fs-4,Math.max(len,fs*4)+8,fs+22);
+  ctx.fillStyle='#fff'; ctx.fillRect(bx,by,len,5);
+  ctx.font='bold '+fs+'px sans-serif'; ctx.textBaseline='bottom';
+  ctx.fillText(nice+' µm',bx,by-3);
+}
+function drawCalMarks(){
+  if(state.mode!=='cal'||!state.calPts.length) return;
+  ctx.strokeStyle='#ff3b30'; ctx.fillStyle='#ff3b30'; ctx.lineWidth=Math.max(2,cv.width/400);
+  const p=state.calPts, r=Math.max(6,cv.width/90);
+  p.forEach(q=>{ctx.beginPath();ctx.arc(q.x,q.y,r,0,7);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(q.x-r*1.6,q.y);ctx.lineTo(q.x+r*1.6,q.y);ctx.moveTo(q.x,q.y-r*1.6);ctx.lineTo(q.x,q.y+r*1.6);ctx.stroke();});
+  if(p.length===2){ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);ctx.lineTo(p[1].x,p[1].y);ctx.stroke();}
+}
+
+/* ---------- Modo y calibración ---------- */
+function setMode(m){
+  state.mode=m;
+  $('modeAnalyze').classList.toggle('on',m==='analyze');
+  $('modeCal').classList.toggle('on',m==='cal');
+  if(m==='cal'){state.calPts=[]; $('s2').scrollIntoView({behavior:'smooth',block:'nearest'});}
+  updateCalUI(); redraw();
+}
+cv.addEventListener('pointerdown',e=>{
+  if(state.mode!=='cal'||!state.base) return;
+  const r=cv.getBoundingClientRect();
+  const x=(e.clientX-r.left)*cv.width/r.width, y=(e.clientY-r.top)*cv.height/r.height;
+  if(state.calPts.length>=2) state.calPts=[];
+  state.calPts.push({x,y});
+  updateCalUI(); redraw();
+});
+function calDistPx(){
+  const p=state.calPts; if(p.length<2) return 0;
+  return Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+}
+function updateCalUI(){
+  const n=state.calPts.length;
+  $('calPtInfo').textContent= state.mode==='cal'
+    ? 'Puntos marcados: '+n+' de 2'+(n===2? ' · distancia en pantalla: '+fmt(calDistPx(),0)+' px' : ' · toque la imagen')
+    : 'Active "Calibrar con regla" arriba de la imagen para marcar puntos.';
+  $('btnCalSave').disabled=!(state.mode==='cal'&&n===2);
+  const box=$('calStatus');
+  if(state.cal){
+    const f=state.cal.fieldWidthUm, px=pxPerUmNow();
+    box.className='note';
+    box.innerHTML='<b>Perfil activo: '+esc(state.cal.name||'sin nombre')+'.</b> Ancho del campo: '+fmt(f,0)+' µm'+(px?' · '+fmt(px,2)+' px/µm en la imagen actual':'')+
+      '<br><small>Guardado el '+esc(new Date(state.cal.savedAt).toLocaleDateString('es-GT'))+'. Use otro perfil si cambia la ampliación o el celular.</small>';
+  } else {
+    box.className='bad'; box.textContent='Sin calibrar: elija un perfil o cree uno. Sin calibración no se pueden medir tamaños ni clasificar partículas.';
+  }
+  $('legend').innerHTML='';
+}
+/* ---------- Análisis ---------- */
+function buildOverlay(res){
+  const {w,h,labels,kept}=res, base=state.base.data;
+  const out=new ImageData(new Uint8ClampedArray(base),w,h), o=out.data;
+  const colorBy=new Array(labels.length?kept.length:0); const map=new Map();
+  kept.forEach(k=>map.set(k.id,CATS[k.cat].color));
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    const i=y*w+x, l=labels[i]; if(!l) continue;
+    const c=map.get(l); if(!c) continue;
+    const edge=(x===0||labels[i-1]!==l||x===w-1||labels[i+1]!==l||y===0||labels[i-w]!==l||y===h-1||labels[i+w]!==l);
+    const a=edge?1:0.35, j=i*4;
+    o[j]=o[j]*(1-a)+c[0]*a; o[j+1]=o[j+1]*(1-a)+c[1]*a; o[j+2]=o[j+2]*(1-a)+c[2]*a;
+  }
+  kept.forEach(k=>{
+    if(!k.box) return; const c=CATS[k.cat].color, b=k.box;
+    const put=(x,y)=>{if(x<0||y<0||x>=w||y>=h) return; const j=(y*w+x)*4; o[j]=c[0]; o[j+1]=c[1]; o[j+2]=c[2];};
+    for(let x=b.x1;x<=b.x2;x++){put(x,b.y1);put(x,b.y1+1);put(x,b.y2);put(x,b.y2-1);}
+    for(let y=b.y1;y<=b.y2;y++){put(b.x1,y);put(b.x1+1,y);put(b.x2,y);put(b.x2-1,y);}
+  });
+  state.overlay=out;
+}
+function renderAnalysis(res){
+  let h='';
+  res.issues.forEach(t=>h+='<div class="bad">'+esc(t)+'</div>');
+  res.warns.forEach(t=>h+='<div class="warn">'+esc(t)+'</div>');
+  const cal=!!res.pxPerUm;
+  h+='<div class="metrics">'+
+    '<div class="metric"><b>'+res.nParticles+'</b><span>partículas contadas</span></div>'+
+    '<div class="metric"><b>'+fmt(res.coveragePct,2)+' %</b><span>del campo cubierto</span></div>'+
+    '<div class="metric"><b>'+(cal?fmt(res.fieldWidthUm,0)+' µm':'-')+'</b><span>ancho del campo</span></div>';
+  if(res.depthUm&&cal){
+    const vol=res.fieldAreaUm2*res.depthUm/1e12;
+    h+='<div class="metric"><b>'+Math.round(res.nParticles/vol).toLocaleString('es-GT')+'</b><span>part./mL (estimado, un campo)</span></div>';
+  }
+  h+='</div>';
+  if(cal){
+    const max=Math.max(1,...CAT_ORDER.map(c=>res.counts[c]));
+    h+='<div class="bars">';
+    CAT_ORDER.forEach(c=>{
+      if(c==='aprox'&&!res.counts.aprox) return;
+      const n=res.counts[c], m=CATS[c];
+      h+='<div class="bar" title="'+esc(m.hint)+'"><span><i class="sw" style="background:rgb('+m.color+')"></i>'+esc(m.label)+'</span>'+
+         '<div class="track"><div class="fill" style="width:'+(n/max*100)+'%;background:rgb('+m.color+')"></div></div><b>'+n+'</b></div>';
+    });
+    h+='</div>';
+    if(res.counts.borde) h+='<div class="hint">'+res.counts.borde+' objeto(s) cortados por el borde de la imagen no se cuentan.</div>';
+    h+='<div class="hint">Las categorías describen forma y tamaño; no identifican organismos. Las esferas lisas son casi siempre burbujas de aire; las estructuras redondas de 4-15 µm deben confirmarse en laboratorio.</div>';
+  }
+  if(res.engine==='sam'&&res.engineInfo){
+    const ei=res.engineInfo;
+    h+='<div class="hint">Motor: SAM 3.1 · conceptos: '+esc(ei.concepts.join(', '))+' · SAM devolvió '+ei.received+' objeto(s); se usaron '+ei.used+' (confianza mínima '+ei.conf+').'+(res.counts.aprox?' '+res.counts.aprox+' con forma aproximada (solo caja).':'')+'</div>';
+  }
+  $('analysisOut').innerHTML=h;
+  $('addBox').style.display='block';
+  $('chkOk').checked=false;
+  updateAddBtn();
+}
+function updateAddBtn(){
+  $('btnAddField').disabled=!(state.result&&state.result.valid&&$('chkOk').checked);
+}
+$('chkOk').onchange=updateAddBtn;
+
+/* ---------- Campos de la muestra ---------- */
+function addField(){
+  const r=state.result; if(!r||!r.valid) return;
+  state.fields.push({
+    nParticles:r.nParticles, coveragePct:r.coveragePct, counts:{...r.counts},
+    fieldAreaUm2:r.fieldAreaUm2, depthUm:r.depthUm,
+    profile:state.cal?{name:state.cal.name,fieldWidthUm:state.cal.fieldWidthUm}:null,
+    img:snap(480,0.72), thumb:snap(160,0.6),
+    engine:r.engine||'local', engineInfo:r.engineInfo?(r.engineInfo.concepts.join(', ')+' · conf. min. '+r.engineInfo.conf):''
+  });
+  state.result=null; state.overlay=null; $('analysisOut').innerHTML=''; $('addBox').style.display='none';
+  renderFields(); updateVerdict(); redraw();
+}
+$('btnAddField').onclick=addField;
+function renderFields(){
+  const n=state.fields.length;
+  if(!n){$('fieldsBox').innerHTML='';return;}
+  let h='<div class="hint" style="margin-top:10px"><b>Campos agregados a esta muestra: '+n+'</b>'+(n<3?' · se recomiendan al menos 3 a 5':'')+'</div><div class="fieldchips">';
+  state.fields.forEach((f,i)=>h+='<span class="chip">Campo '+(i+1)+': '+f.nParticles+' part., '+fmt(f.coveragePct,2)+' %'+(f.profile?' · '+esc(f.profile.name):'')+'</span>');
+  h+='</div><button class="danger" id="btnUndo" style="min-height:36px;padding:6px 12px">Quitar el último campo</button>';
+  $('fieldsBox').innerHTML=h;
+  $('btnUndo').onclick=()=>{state.fields.pop();renderFields();updateVerdict();};
+}
+function aggregate(){
+  const n=state.fields.length, counts={}; CAT_KEYS.forEach(c=>counts[c]=0);
+  let cov=0, part=0, dens=[];
+  state.fields.forEach(f=>{
+    cov+=f.coveragePct; part+=f.nParticles;
+    CAT_KEYS.forEach(c=>counts[c]+=f.counts[c]||0);
+    if(f.depthUm&&f.fieldAreaUm2) dens.push(f.nParticles/(f.fieldAreaUm2*f.depthUm/1e12));
+  });
+  return {n, coverage:n?cov/n:0, particles:n?part/n:0, counts, profiles:profsOf(), engines:enginesOf(),
+          density:dens.length? dens.reduce((a,b)=>a+b,0)/dens.length : null};
+}
+
+/* ---------- Pruebas y veredicto ---------- */
+function readTests(){
+  const num=id=>{const v=parseFloat($(id).value); return isNaN(v)?null:v;};
+  return {coli:$('tColi').value, cl:num('tCl'), ph:num('tPh'), turb:num('tTurb'), srcType:$('srcType').value};
+}
+function computeVerdict(agg,t){
+  const reasons=[], flags=[]; let red=false;
+  if(t.coli==='present'){red=true; reasons.push('La prueba de coliformes / E. coli salió POSITIVA: indica posible contaminación fecal.');}
+  if(agg.n>0){
+    if(agg.coverage>=CONFIG.coberturaAlta) flags.push('Carga visible de partículas ALTA ('+fmt(agg.coverage,1)+' % del campo en promedio).');
+    else if(agg.coverage>=CONFIG.coberturaMedia) flags.push('Carga visible de partículas moderada ('+fmt(agg.coverage,1)+' % del campo en promedio).');
+    if(agg.counts.fibra>0) flags.push('Se observaron fibras o filamentos ('+agg.counts.fibra+'). Pueden ser algas, hongos o fibras; este equipo no los identifica.');
+    if(agg.counts.redonda>=CONFIG.redondasMin) flags.push('Se observaron '+agg.counts.redonda+' estructuras redondas de 4-15 µm. Pueden ser algas, polen, levaduras u otros organismos; no se pueden identificar aquí y conviene confirmar en laboratorio.');
+  }
+  if(t.turb!=null&&t.turb>CONFIG.turbNTU) flags.push('Turbidez medida de '+t.turb+' NTU, mayor que '+CONFIG.turbNTU+' NTU.');
+  if(t.ph!=null&&(t.ph<CONFIG.ph[0]||t.ph>CONFIG.ph[1])) flags.push('pH de '+t.ph+' fuera del rango orientativo '+CONFIG.ph[0]+'-'+CONFIG.ph[1]+'.');
+  if(t.cl!=null){
+    if(t.srcType==='red'&&t.cl<CONFIG.clMin) flags.push('Cloro residual bajo ('+t.cl+' mg/L) en una red clorada: desinfección insuficiente.');
+    if(t.cl>CONFIG.clMax) flags.push('Cloro residual alto ('+t.cl+' mg/L). Revise la dosificación.');
+  }
+  if(t.srcType==='superficial') flags.push('Fuente superficial (río, lago, quebrada): siempre requiere tratamiento antes de beber.');
+
+  let level;
+  if(red) level='red';
+  else if(flags.length) level='amber';
+  else if(t.coli==='absent'&&agg.n>=CONFIG.minFieldsGreen) level='green';
+  else level='gray';
+
+  const missing=[];
+  if(t.coli==='none') missing.push('Falta la prueba de coliformes / E. coli, que es la más importante.');
+  if(agg.n===0) missing.push('No hay campos de microscopio agregados (paso 3).');
+  else if(agg.n<CONFIG.minFieldsGreen) missing.push('Hay solo '+agg.n+' campo(s): se necesitan al menos '+CONFIG.minFieldsGreen+' para un resultado representativo.');
+  if(!state.cal) missing.push('La imagen no está calibrada.');
+
+  const V={
+    red:{title:'NO BEBER SIN TRATAR', badge:'ALERTA',
+      actions:['No beba ni cocine con esta agua sin tratarla.','Hierva 1 minuto a hervor fuerte, o desinfecte con cloro siguiendo las instrucciones del producto o del centro de salud (MSPAS).','Avise al comité de agua y al centro de salud.','Busque una fuente alterna mientras se corrige. Proteja especialmente a bebés y personas enfermas.','Repita las pruebas después de corregir.']},
+    amber:{title:'REQUIERE ACCIÓN ANTES DE CONSUMIR', badge:'PRECAUCIÓN',
+      actions:['Filtre con tela limpia doblada o un filtro de arena/cerámica para bajar la turbidez.','Después de filtrar, hierva 1 minuto o desinfecte con cloro: el filtrado solo no elimina microbios.','Busque la causa (tanque sucio, fuga, lluvia reciente, fuente expuesta).','Si hay filamentos o estructuras redondas, confirme en un laboratorio.','Haga la prueba de coliformes si aún no la tiene.']},
+    green:{title:'SIN HALLAZGOS EN LAS PRUEBAS REALIZADAS', badge:'SIN HALLAZGOS',
+      actions:['Mantenga tanques tapados y limpios.','Repita las pruebas cada mes y después de lluvias fuertes.','Recuerde que no se midieron sustancias químicas como arsénico, nitratos o plaguicidas.']},
+    gray:{title:'RESULTADO INCOMPLETO', badge:'INCOMPLETO',
+      actions:['Complete las pruebas que faltan para obtener una orientación.','Mientras tanto, no considere esta agua como confirmada potable.']}
+  }[level];
+  return {level, title:V.title, badge:V.badge, reasons:reasons.concat(flags), missing, actions:V.actions};
+}
+function updateVerdict(){
+  const agg=aggregate(), t=readTests(), v=computeVerdict(agg,t);
+  state.verdict=v; state.agg=agg;
+  let h='<div class="verdict '+v.level+'"><span class="badge bd">'+esc(v.badge)+'</span><h3>'+esc(v.title)+'</h3>';
+  if(v.reasons.length) h+='<b>Hallazgos</b><ul>'+v.reasons.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';
+  if(v.missing.length&&v.level!=='red') h+='<b>Pendiente</b><ul>'+v.missing.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';
+  h+='<b>Qué hacer</b><ul>'+v.actions.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';
+  if(agg.n) h+='<div style="font-size:.86rem;margin-top:6px">Campos: '+agg.n+' · cobertura media '+fmt(agg.coverage,2)+' % · '+fmt(agg.particles,0)+' partículas por campo'+(agg.density?' · ~'+Math.round(agg.density).toLocaleString('es-GT')+' part./mL (estimado)':'')+'</div>';
+  h+='<div class="disclaimer">Orientación comunitaria de tamizaje. El microscopio no detecta bacterias, virus ni químicos; un resultado sin hallazgos no garantiza que el agua sea potable. No sustituye el análisis de laboratorio. Los umbrales son orientativos: verifique con la norma COGUANOR vigente y el MSPAS.</div></div>';
+  $('verdict').innerHTML=h;
+}
+['tColi','tCl','tPh','tTurb','srcType'].forEach(id=>{$(id).addEventListener('input',updateVerdict);$(id).addEventListener('change',updateVerdict);});
+
+/* ---------- GPS ---------- */
+$('btnGPS').onclick=()=>{
+  if(!navigator.geolocation){$('gpsOut').textContent='Este navegador no permite ubicación.';return;}
+  $('gpsOut').textContent='Buscando ubicación...';
+  navigator.geolocation.getCurrentPosition(p=>{
+    state.gps={lat:+p.coords.latitude.toFixed(5),lon:+p.coords.longitude.toFixed(5)};
+    $('gpsOut').textContent=state.gps.lat+', '+state.gps.lon;
+  },()=>{$('gpsOut').textContent='No se pudo obtener la ubicación.';},{enableHighAccuracy:true,timeout:15000});
+};
+
+/* ---------- Historial ---------- */
+function thumb(){
+  if(!state.base) return null;
+  try{
+    const t=document.createElement('canvas'), w=160, h=Math.round(160*cv.height/cv.width);
+    t.width=w; t.height=h; t.getContext('2d').drawImage(cv,0,0,w,h);
+    return t.toDataURL('image/jpeg',0.6);
+  }catch(e){return null;}
+}
+function saveSample(){
+  updateVerdict();
+  const agg=state.agg, v=state.verdict, t=readTests();
+  if(!agg.n && t.coli==='none' && t.cl==null && t.ph==null && t.turb==null){alert('No hay datos para guardar.');return;}
+  const rec={
+    id:Date.now(), ts:new Date().toISOString(),
+    name:$('srcName').value.trim(), srcType:t.srcType, gps:state.gps, equip:$('equip').value.trim(), notes:$('notes').value.trim(),
+    fields:agg.n, coverage:+agg.coverage.toFixed(3), particles:+agg.particles.toFixed(1), counts:agg.counts, density:agg.density?Math.round(agg.density):null,
+    coli:t.coli, cl:t.cl, ph:t.ph, turb:t.turb, level:v.level, title:v.title, reasons:v.reasons, missing:v.missing, actions:v.actions,
+    profiles:agg.profiles.length?agg.profiles:(state.cal?[{name:state.cal.name,fieldWidthUm:state.cal.fieldWidthUm}]:[]),
+    engines:agg.engines,
+    lab:'', thumb:(state.fields[0]&&state.fields[0].thumb)||thumb()
+  };
+  const hist=store.get(KEY_HIST,[]); hist.unshift(rec);
+  if(!store.set(KEY_HIST,hist)){
+    rec.thumb=null; if(!store.set(KEY_HIST,hist)) alert('No se pudo guardar en este navegador (almacenamiento lleno o bloqueado). Exporte el historial y borre registros antiguos.');
+  }
+  state.fields=[]; renderFields(); updateVerdict(); renderHistory();
+  alert('Muestra guardada en el historial.');
+}
+$('btnSave').onclick=saveSample;
+$('btnPDF').onclick=()=>{const rep=sessionReport(); if(rep) downloadPDF(rep);};
+const LV={red:['ALERTA','#b3261e','#fff'],amber:['PRECAUCIÓN','#d9a21b','#2b1d00'],green:['SIN HALLAZGOS','#1b6e3c','#fff'],gray:['INCOMPLETO','#6d7d87','#fff']};
+const COLI={none:'no realizada',absent:'ausente',present:'PRESENTE'};
+const SRC={red:'red con cloro',pozo:'pozo',nacimiento:'nacimiento',superficial:'superficial',lluvia:'lluvia',otra:'otra'};
+function renderHistory(){
+  const hist=store.get(KEY_HIST,[]);
+  if(!hist.length){$('histList').innerHTML='<div class="hint">Aún no hay muestras guardadas.</div>';$('valStats').style.display='none';return;}
+  $('histList').innerHTML=hist.map(r=>{
+    const lv=LV[r.level]||LV.gray;
+    return '<div class="hist-item">'+(r.thumb?'<img alt="" src="'+r.thumb+'">':'<div class="ph"></div>')+
+      '<div><b>'+esc(r.name||'(sin nombre)')+'</b> <span class="badge" style="background:'+lv[1]+';color:'+lv[2]+'">'+lv[0]+'</span><br>'+
+      '<small>'+esc(new Date(r.ts).toLocaleString('es-GT'))+' · '+esc(SRC[r.srcType]||'')+' · '+r.fields+' campo(s) · cobertura '+fmt(r.coverage,2)+' % · coliformes: '+COLI[r.coli]+
+      (r.cl!=null?' · cloro '+r.cl:'')+(r.ph!=null?' · pH '+r.ph:'')+(r.turb!=null?' · '+r.turb+' NTU':'')+(r.profiles&&r.profiles.length?' · calibración '+esc(r.profiles.map(p=>p.name).join(', ')):'')+'</small><br>'+
+      '<div class="row" style="margin:6px 0 0"><select data-lab="'+r.id+'" style="width:auto;padding:6px"><option value="">Laboratorio: sin dato</option><option value="apta"'+(r.lab==='apta'?' selected':'')+'>Laboratorio: apta</option><option value="no_apta"'+(r.lab==='no_apta'?' selected':'')+'>Laboratorio: no apta</option></select>'+
+      '<button class="sec" data-pdf="'+r.id+'" style="min-height:34px;padding:4px 10px">PDF</button><button class="danger" data-del="'+r.id+'" style="min-height:34px;padding:4px 10px">Borrar</button></div></div></div>';
+  }).join('');
+  document.querySelectorAll('[data-lab]').forEach(s=>s.onchange=()=>{
+    const h=store.get(KEY_HIST,[]), x=h.find(q=>String(q.id)===s.dataset.lab); if(x){x.lab=s.value; store.set(KEY_HIST,h); renderHistory();}
+  });
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    if(!confirm('¿Borrar este registro?')) return;
+    store.set(KEY_HIST,store.get(KEY_HIST,[]).filter(q=>String(q.id)!==b.dataset.del)); renderHistory();
+  });
+  document.querySelectorAll('[data-pdf]').forEach(b=>b.onclick=()=>{const r=store.get(KEY_HIST,[]).find(q=>String(q.id)===b.dataset.pdf); if(r) downloadPDF(recordReport(r));});
+  // validación contra laboratorio
+  const wl=hist.filter(r=>r.lab&&['red','amber','green'].includes(r.level));
+  const vs=$('valStats');
+  if(wl.length){
+    const agree=wl.filter(r=>(r.level!=='green')===(r.lab==='no_apta')).length;
+    const fn=wl.filter(r=>r.level==='green'&&r.lab==='no_apta').length;
+    vs.style.display='block';
+    vs.innerHTML='<b>Validación con laboratorio:</b> '+wl.length+' muestra(s) con resultado de laboratorio. La herramienta coincidió en '+agree+' ('+Math.round(agree/wl.length*100)+' %). '+
+      'Casos críticos (la herramienta dijo "sin hallazgos" pero el laboratorio dijo "no apta"): <b>'+fn+'</b>.';
+  } else vs.style.display='none';
+}
+function download(name,text,type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+}
+$('btnCSV').onclick=()=>{
+  const hist=store.get(KEY_HIST,[]); if(!hist.length){alert('No hay registros.');return;}
+  const cols=['fecha','fuente','tipo_fuente','lat','lon','equipo','campos','cobertura_pct','particulas_por_campo','finas','irregulares','agregados','fibras','esferas','redondas','aproximadas_sam','densidad_est_ml','coliformes','cloro_mgL','ph','turbidez_NTU','veredicto','laboratorio','perfil_calibracion','ancho_campo_um','motor','notas'];
+  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const rows=hist.map(r=>[r.ts,r.name,r.srcType,r.gps?r.gps.lat:'',r.gps?r.gps.lon:'',r.equip,r.fields,r.coverage,r.particles,
+    r.counts.fina,r.counts.irregular,r.counts.agregado,r.counts.fibra,r.counts.esfera,r.counts.redonda,r.counts.aprox,r.density,r.coli,r.cl,r.ph,r.turb,r.title,r.lab,(r.profiles||[]).map(p=>p.name).join(' / '),(r.profiles||[]).map(p=>Math.round(p.fieldWidthUm)).join(' / '),(r.engines||[]).join(' / '),r.notes].map(q).join(','));
+  download('aquametrix_historial.csv','\ufeff'+cols.join(',')+'\n'+rows.join('\n'),'text/csv;charset=utf-8');
+};
+$('btnJSON').onclick=()=>{
+  const hist=store.get(KEY_HIST,[]).map(r=>{const c={...r}; delete c.thumb; return c;});
+  download('aquametrix_historial.json',JSON.stringify(hist,null,2),'application/json');
+};
+$('btnClearAll').onclick=()=>{
+  if(confirm('¿Borrar TODO el historial? Esta acción no se puede deshacer. Se recomienda exportar antes.')){store.set(KEY_HIST,[]);renderHistory();}
+};
+
+/* ---------- Perfiles de calibración ---------- */
+function loadProfiles(){
+  let list=store.get(KEY_PROF,null), act=store.get(KEY_PROF_ACTIVE,null);
+  if(!Array.isArray(list)){
+    list=[]; const old=store.get(KEY_CAL,null);
+    if(old&&old.fieldWidthUm>0){
+      const p={id:Date.now(),name:'Calibración guardada',fieldWidthUm:old.fieldWidthUm,savedAt:old.savedAt||Date.now()};
+      list.push(p); act=p.id;
+    }
+    store.set(KEY_PROF,list); store.set(KEY_PROF_ACTIVE,act);
+  }
+  state.profiles=list; state.cal=list.find(p=>p.id===act)||null; renderProfiles();
+}
+function renderProfiles(){
+  const act=state.cal?state.cal.id:'';
+  $('profSel').innerHTML='<option value="">(sin calibración)</option>'+
+    state.profiles.map(p=>'<option value="'+p.id+'"'+(p.id===act?' selected':'')+'>'+esc(p.name)+' · campo '+fmt(p.fieldWidthUm,0)+' µm</option>').join('');
+  $('btnProfDel').disabled=!state.cal;
+}
+function persistProfiles(activeId){
+  store.set(KEY_PROF,state.profiles); store.set(KEY_PROF_ACTIVE,activeId);
+  state.cal=state.profiles.find(p=>p.id===activeId)||null;
+  // un cambio de calibración invalida el análisis en pantalla
+  state.result=null; state.overlay=null; $('analysisOut').innerHTML=''; $('addBox').style.display='none';
+  renderProfiles(); updateCalUI(); updateVerdict(); redraw();
+}
+function saveProfile(fieldWidthUm){
+  const name=($('calName').value||'').trim();
+  if(!name){alert('Escriba el nombre del perfil (por ejemplo 250x).');$('calName').focus();return false;}
+  const ex=state.profiles.find(p=>p.name.toLowerCase()===name.toLowerCase());
+  if(ex&&!confirm('Ya existe el perfil "'+ex.name+'". ¿Reemplazarlo?')) return false;
+  if(state.fields.length&&!confirm('Ya hay campos analizados en esta muestra con otra calibración. ¿Continuar?')) return false;
+  const p={id:ex?ex.id:Date.now(),name:ex?ex.name:name,fieldWidthUm:fieldWidthUm,savedAt:Date.now()};
+  if(ex) state.profiles[state.profiles.indexOf(ex)]=p; else state.profiles.push(p);
+  persistProfiles(p.id); return true;
+}
+function profsOf(){
+  const out=[];
+  state.fields.forEach(f=>{const p=f.profile;
+    if(p&&!out.some(q=>q.name===p.name&&Math.round(q.fieldWidthUm)===Math.round(p.fieldWidthUm))) out.push({name:p.name,fieldWidthUm:p.fieldWidthUm});});
+  return out;
+}
+$('profSel').onchange=()=>{
+  const v=$('profSel').value, id=v?+v:null, cur=state.cal?state.cal.id:null;
+  if(state.fields.length&&id!==cur&&!confirm('Ya hay campos analizados en esta muestra con otro perfil. ¿Cambiar de perfil de todos modos?')){renderProfiles();return;}
+  persistProfiles(id);
+};
+$('btnProfDel').onclick=()=>{
+  if(!state.cal) return;
+  if(!confirm('¿Borrar el perfil "'+state.cal.name+'"?')) return;
+  const id=state.cal.id; state.profiles=state.profiles.filter(p=>p.id!==id); persistProfiles(null);
+};
+$('btnCalSave').onclick=()=>{
+  const known=parseFloat($('calKnown').value), dpx=calDistPx();
+  if(!(known>0)||!(dpx>0)){alert('Escriba la distancia real en µm y marque dos puntos.');return;}
+  const fw=cv.width/(dpx/known);
+  if(saveProfile(fw)){state.calPts=[]; setMode('analyze');}
+};
+$('btnCalManual').onclick=()=>{
+  const f=parseFloat($('calManual').value);
+  if(!(f>0)){alert('Escriba el ancho del campo en µm.');return;}
+  saveProfile(f);
+};
+
+/* ---------- Capturas de cada campo ---------- */
+function snap(wd,q){
+  try{
+    const t=document.createElement('canvas'), h=Math.round(wd*cv.height/cv.width);
+    t.width=wd; t.height=h; t.getContext('2d').drawImage(cv,0,0,wd,h);
+    return t.toDataURL('image/jpeg',q);
+  }catch(e){return null;}
+}
+
+/* ---------- Reporte PDF (sin librerías) ---------- */
+// ==PDF-START==
+const PDF_MAP={'—':'-','–':'-','−':'-','“':'"','”':'"','‘':"'",'’':"'",'…':'...','≥':'>=','≤':'<=','→':'->','×':'x'};
+function pdfClean(s){
+  return String(s==null?'':s).replace(/[\u0000-\u001f]+/g,' ').replace(/[^\u0000-ÿ]/g,c=>PDF_MAP[c]||'?');
+}
+function pdfEsc(s){return s.replace(/[\\()]/g,'\\$&');}
+function jpegSize(bin){
+  const c=k=>bin.charCodeAt(k); let i=2;
+  while(i<bin.length-9){
+    if(c(i)!==0xFF){i++;continue;}
+    const m=c(i+1);
+    if(m>=0xC0&&m<=0xCF&&m!==0xC4&&m!==0xC8&&m!==0xCC) return {h:(c(i+5)<<8)|c(i+6), w:(c(i+7)<<8)|c(i+8)};
+    i+=2+((c(i+2)<<8)|c(i+3));
+  }
+  return null;
+}
+function buildPDF(rep){
+  const W=595.28,H=841.89,M=42,CW=W-2*M;
+  const mc=document.createElement('canvas').getContext('2d');
+  const tw=(s,sz,b)=>{mc.font=(b?'bold ':'')+sz+'px Arial, Helvetica, sans-serif'; return mc.measureText(s).width;};
+  const col=c=>c.map(v=>(v/255).toFixed(3)).join(' ');
+  const pages=[], images=[]; let P=null, y=0;
+  function newPage(){P={ops:[],im:[]}; pages.push(P); y=M;}
+  function txt(s,x,yy,sz,b,c){P.ops.push('BT /'+(b?'F2':'F1')+' '+sz+' Tf '+col(c||[20,35,43])+' rg '+x.toFixed(2)+' '+(H-yy-sz).toFixed(2)+' Td ('+pdfEsc(pdfClean(s))+') Tj ET');}
+  function rect(x,yy,w,h,c,stroke){
+    P.ops.push(stroke? col(c)+' RG 0.8 w '+x.toFixed(2)+' '+(H-yy-h).toFixed(2)+' '+w.toFixed(2)+' '+h.toFixed(2)+' re S'
+                     : col(c)+' rg '+x.toFixed(2)+' '+(H-yy-h).toFixed(2)+' '+w.toFixed(2)+' '+h.toFixed(2)+' re f');
+  }
+  function ensure(h){if(y+h>H-M-24) newPage();}
+  function wrap(s,sz,b,maxW){
+    const out=[];
+    pdfClean(s).split(/\s{2,}\n|\n/).forEach(par=>{
+      let line='';
+      par.split(/\s+/).filter(Boolean).forEach(w=>{
+        const t=line?line+' '+w:w;
+        if(!line||tw(t,sz,b)<=maxW) line=t; else {out.push(line); line=w;}
+      });
+      out.push(line);
+    });
+    return out;
+  }
+  function para(s,o){
+    o=o||{}; const sz=o.size||10, b=!!o.bold, ind=o.indent||0, lh=sz*1.32;
+    wrap((o.bullet?'- ':'')+s,sz,b,CW-ind).forEach((ln,i)=>{ensure(lh); txt(ln,M+ind+(o.bullet&&i>0?8:0),y,sz,b,o.color); y+=lh;});
+    y+=(o.gap==null?2:o.gap);
+  }
+  function h2(s){
+    ensure(36); y+=6; txt(s,M,y,12,true,[13,127,140]); y+=16;
+    P.ops.push(col([217,225,230])+' RG 0.6 w '+M+' '+(H-y).toFixed(2)+' m '+(W-M).toFixed(2)+' '+(H-y).toFixed(2)+' l S'); y+=6;
+  }
+  function kv(label,val){
+    const lw=165, lines=wrap(val,10,false,CW-lw), lh=13.2; ensure(lh*lines.length);
+    txt(label,M,y,10,true,[91,107,117]);
+    lines.forEach(ln=>{txt(ln,M+lw,y,10,false); y+=lh;}); y+=1;
+  }
+
+  newPage();
+  rect(0,0,W,64,[10,98,108]);
+  txt('Aqua'ja - Reporte de tamizaje de agua',M,15,17,true,[255,255,255]);
+  txt('Fecha: '+new Date(rep.ts).toLocaleString('es-GT')+'   |   Orientación comunitaria; no sustituye el laboratorio',M,40,9,false,[225,240,242]);
+  y=80;
+
+  h2('Datos de la muestra');
+  kv('Fuente / lugar',rep.name||'(sin nombre)');
+  kv('Tipo de fuente',SRC[rep.srcType]||'-');
+  kv('Ubicación',rep.gps?rep.gps.lat+', '+rep.gps.lon:'no registrada');
+  kv('Equipo',rep.equip||'-');
+  kv('Perfil de calibración',(rep.profiles&&rep.profiles.length)?rep.profiles.map(p=>p.name+' (ancho de campo '+fmt(p.fieldWidthUm,0)+' µm)').join('; '):'sin calibrar');
+  kv('Motor de análisis',(rep.engines&&rep.engines.length)?rep.engines.join('; '):'no registrado');
+  y+=8;
+
+  const LVC={red:[179,38,30],amber:[217,162,27],green:[27,110,60],gray:[109,125,135]};
+  const lv=LV[rep.level]||LV.gray, lvc=LVC[rep.level]||LVC.gray, ink=rep.level==='amber'?[43,29,0]:[255,255,255];
+  ensure(44); rect(M,y,CW,30,lvc);
+  txt(rep.title||'',M+10,y+8,14,true,ink);
+  txt(lv[0],W-M-10-tw(lv[0],10,true),y+10,10,true,ink);
+  y+=40;
+  if(rep.reasons&&rep.reasons.length){para('Hallazgos',{bold:true,gap:1}); rep.reasons.forEach(r=>para(r,{bullet:true,indent:6,gap:1})); y+=4;}
+  if(rep.level!=='red'&&rep.missing&&rep.missing.length){para('Pendiente',{bold:true,gap:1}); rep.missing.forEach(r=>para(r,{bullet:true,indent:6,gap:1})); y+=4;}
+  if(rep.actions&&rep.actions.length){para('Qué hacer',{bold:true,gap:1}); rep.actions.forEach(r=>para(r,{bullet:true,indent:6,gap:1})); y+=4;}
+
+  h2('Resultados del microscopio');
+  if(rep.fields>0){
+    kv('Campos analizados',rep.fields+(rep.fields<3?' (se recomiendan al menos 3 a 5)':''));
+    kv('Cobertura media del campo',fmt(rep.coverage,2)+' %');
+    kv('Partículas por campo (promedio)',fmt(rep.particles,0));
+    if(rep.density) kv('Densidad estimada',Math.round(rep.density).toLocaleString('es-GT')+' partículas/mL (estimado)');
+    CAT_ORDER.forEach(c=>{if(c==='aprox'&&!(rep.counts&&rep.counts.aprox)) return; kv(CATS[c].label,String((rep.counts&&rep.counts[c])||0));});
+    para('Las categorías describen forma y tamaño; no identifican organismos.',{size:8.5,color:[91,107,117]});
+  } else para('No se agregaron campos de microscopio a esta muestra.');
+
+  h2('Pruebas complementarias');
+  kv('Coliformes / E. coli',COLI[rep.coli]||'no realizada');
+  kv('Cloro residual libre',rep.cl!=null?rep.cl+' mg/L':'no medido');
+  kv('pH',rep.ph!=null?String(rep.ph):'no medido');
+  kv('Turbidez',rep.turb!=null?rep.turb+' NTU':'no medida');
+
+  if(rep.images&&rep.images.length){
+    ensure(230); h2('Imágenes de los campos analizados');
+    const items=[];
+    rep.images.slice(0,6).forEach((d,idx)=>{
+      try{const bin=atob(String(d).split(',')[1]||''), sz=jpegSize(bin);
+        if(sz){images.push({bin,w:sz.w,h:sz.h}); items.push({k:images.length-1,w:sz.w,h:sz.h,idx});}}catch(e){}
+    });
+    const cell=(CW-12)/2;
+    for(let i=0;i<items.length;i+=2){
+      const row=items.slice(i,i+2).map(it=>{const dw=Math.min(cell,it.w*(rep.lowres?1:0.6)); return {it,dw,dh:dw*it.h/it.w};});
+      const rh=Math.max.apply(null,row.map(r=>r.dh))+16; ensure(rh);
+      row.forEach((r,j)=>{
+        const x=M+j*(cell+12);
+        P.ops.push('q '+r.dw.toFixed(2)+' 0 0 '+r.dh.toFixed(2)+' '+x.toFixed(2)+' '+(H-y-r.dh).toFixed(2)+' cm /Im'+r.it.k+' Do Q');
+        P.im.push(r.it.k);
+        txt(rep.lowres?'Miniatura de la muestra':'Campo '+(r.it.idx+1),x,y+r.dh+3,8,false,[91,107,117]);
+      });
+      y+=rh+4;
+    }
+  }
+
+  if(rep.notes){h2('Notas'); para(rep.notes);}
+
+  h2('Confirmación de laboratorio');
+  if(rep.lab) kv('Resultado registrado',rep.lab==='apta'?'Apta':'No apta');
+  else {
+    ensure(50);
+    txt('Resultado de laboratorio:',M,y,10,true,[91,107,117]);
+    rect(M+165,y,10,10,[20,35,43],true); txt('Apta',M+181,y,10,false);
+    rect(M+235,y,10,10,[20,35,43],true); txt('No apta',M+251,y,10,false);
+    y+=22; txt('Fecha: ______________   Laboratorio / firma: ______________________________',M,y,10,false); y+=20;
+  }
+  y+=6;
+  para('Orientación comunitaria de tamizaje. El microscopio no detecta bacterias, virus ni sustancias químicas; un resultado sin hallazgos no garantiza que el agua sea potable. No sustituye el análisis de laboratorio. Los umbrales son orientativos: verifique con la norma COGUANOR vigente y el MSPAS.',{size:8.5,color:[91,107,117]});
+
+  pages.forEach((pg,i)=>{P=pg; txt('Aqua'ja v2.2  ·  Página '+(i+1)+' de '+pages.length,M,H-30,8,false,[91,107,117]);});
+
+  const objs=[], add=b=>{objs.push(b); return objs.length;};
+  add(''); add('');
+  add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+  add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+  const imgIds=images.map(im=>add('<< /Type /XObject /Subtype /Image /Width '+im.w+' /Height '+im.h+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+im.bin.length+' >>\nstream\n'+im.bin+'\nendstream'));
+  const pageIds=[];
+  pages.forEach(pg=>{
+    const s=pg.ops.join('\n');
+    const cid=add('<< /Length '+s.length+' >>\nstream\n'+s+'\nendstream');
+    const xo=Array.from(new Set(pg.im)).map(k=>'/Im'+k+' '+imgIds[k]+' 0 R').join(' ');
+    pageIds.push(add('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+W.toFixed(2)+' '+H.toFixed(2)+'] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> /XObject << '+xo+' >> >> /Contents '+cid+' 0 R >>'));
+  });
+  objs[0]='<< /Type /Catalog /Pages 2 0 R >>';
+  objs[1]='<< /Type /Pages /Kids ['+pageIds.map(i=>i+' 0 R').join(' ')+'] /Count '+pageIds.length+' >>';
+  let out='%PDF-1.4\n%\xe2\xe3\xcf\xd3\n'; const offs=[];
+  objs.forEach((b,i)=>{offs.push(out.length); out+=(i+1)+' 0 obj\n'+b+'\nendobj\n';});
+  const xr=out.length;
+  out+='xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n'+offs.map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+
+       'trailer\n<< /Size '+(objs.length+1)+' /Root 1 0 R >>\nstartxref\n'+xr+'\n%%EOF';
+  const u=new Uint8Array(out.length);
+  for(let i=0;i<out.length;i++) u[i]=out.charCodeAt(i)&255;
+  return u;
+}
+// ==PDF-END==
+function reportStamp(ts){
+  const d=new Date(ts), z=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+'_'+z(d.getHours())+z(d.getMinutes());
+}
+function downloadPDF(rep){
+  try{download('reporte_agua_'+reportStamp(rep.ts)+'.pdf',buildPDF(rep),'application/pdf');}
+  catch(err){console.error(err); alert('No se pudo generar el PDF: '+err.message);}
+}
+function sessionReport(){
+  updateVerdict();
+  const agg=state.agg, v=state.verdict, t=readTests();
+  if(!agg.n&&t.coli==='none'&&t.cl==null&&t.ph==null&&t.turb==null){alert('No hay datos para el reporte.');return null;}
+  return {ts:new Date().toISOString(), name:$('srcName').value.trim(), srcType:t.srcType, gps:state.gps, equip:$('equip').value.trim(), notes:$('notes').value.trim(),
+    profiles:agg.profiles.length?agg.profiles:(state.cal?[{name:state.cal.name,fieldWidthUm:state.cal.fieldWidthUm}]:[]),
+    engines:agg.engines,
+    fields:agg.n, coverage:agg.coverage, particles:agg.particles, counts:agg.counts, density:agg.density?Math.round(agg.density):null,
+    coli:t.coli, cl:t.cl, ph:t.ph, turb:t.turb, level:v.level, title:v.title, reasons:v.reasons, missing:v.missing, actions:v.actions,
+    images:state.fields.map(f=>f.img).filter(Boolean), lab:''};
+}
+function recordReport(r){
+  return {ts:r.ts, name:r.name, srcType:r.srcType, gps:r.gps, equip:r.equip, notes:r.notes, profiles:r.profiles||[],
+    fields:r.fields, coverage:r.coverage, particles:r.particles, counts:r.counts, density:r.density,
+    coli:r.coli, cl:r.cl, ph:r.ph, turb:r.turb, level:r.level, title:r.title,
+    reasons:r.reasons||[], missing:r.missing||[], actions:r.actions||[], images:r.thumb?[r.thumb]:[], lab:r.lab, lowres:true, engines:r.engines||[]};
+}
+
+/* =====================================================================
+   MOTOR SAM 3.1 (con internet)
+   SAM detecta los objetos (cajas + confianza). La forma se mide con el
+   algoritmo local dentro de cada caja. Las máscaras de SAM no se
+   decodifican: su formato no está documentado públicamente.
+   ===================================================================== */
+// ==SAM-START==
+function samKV(s){
+  const o={}; String(s).split(';').forEach(p=>{const i=p.indexOf('='); if(i>0) o[p.slice(0,i).trim()]=p.slice(i+1).trim();});
+  return o;
+}
+function samParseBoxes(text){
+  const out=[], re=/<\|box;([^|>]*)\|>/g, s=String(text==null?'':text); let m;
+  while((m=re.exec(s))){
+    const k=samKV(m[1]);
+    const b={x1:+k.x1,y1:+k.y1,x2:+k.x2,y2:+k.y2,w:+k.w||0,h:+k.h||0,c:(k.c!=null&&k.c!=='')?+k.c:null};
+    if([b.x1,b.y1,b.x2,b.y2].every(Number.isFinite)) out.push(b);
+  }
+  return out;
+}
+function samTextFrom(body){
+  let j=null; try{j=JSON.parse(body);}catch(e){}
+  if(j===null||typeof j!=='object'){
+    let t=''; String(body).split('\n').forEach(l=>{
+      if(l.indexOf('data:')===0){try{const e=JSON.parse(l.slice(5)); if(e&&e.type==='response.output_text.delta'&&typeof e.delta==='string') t+=e.delta;}catch(_){}}
+    });
+    return t||String(body);
+  }
+  if(typeof j.output_text==='string') return j.output_text;
+  let t=''; const walk=o=>{
+    if(!o) return;
+    if(Array.isArray(o)) return o.forEach(walk);
+    if(typeof o==='object'){ if(o.type==='output_text'&&typeof o.text==='string') t+=o.text+'\n'; else Object.keys(o).forEach(k=>walk(o[k])); }
+  };
+  walk(j.output!==undefined?j.output:j);
+  return t;
+}
+async function samCall(url,key,dataUrl,concept,timeoutMs){
+  const ms=timeoutMs||60000, ctl=new AbortController(), tm=setTimeout(()=>ctl.abort(),ms);
+  let res;
+  try{
+    res=await fetch(url,{method:'POST',signal:ctl.signal,
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'sam-3.1',
+        input:[{type:'message',role:'user',content:[{type:'input_text',text:concept},{type:'input_image',image_url:dataUrl}]}],
+        stream:false,metadata:{include_confidence:'true',mask_encoding:'one_bit'}})});
+  }catch(e){
+    clearTimeout(tm);
+    throw new Error(e&&e.name==='AbortError'
+      ? 'SAM tardó demasiado en responder (más de '+Math.round(ms/1000)+' s).'
+      : 'No se pudo conectar con SAM. Revise el internet. Si el internet funciona, el servicio puede no permitir llamadas desde el navegador: en ese caso use un servidor intermedio (Avanzado).');
+  }
+  clearTimeout(tm);
+  const body=await res.text();
+  if(!res.ok){
+    if(res.status===401||res.status===403) throw new Error('La clave de API fue rechazada: revise que esté bien copiada y activa.');
+    if(res.status===429) throw new Error('Se superó el límite de peticiones de la cuenta de API. Espere un momento y repita.');
+    let sn=String(body).replace(/\s+/g,' ').slice(0,160); if(key&&key.length>6) sn=sn.split(key).join('***');
+    throw new Error('SAM respondió con error '+res.status+(sn?': '+sn:'')+'.');
+  }
+  return samParseBoxes(samTextFrom(body));
+}
+function samIoU(a,b){
+  const ix=Math.max(0,Math.min(a.x2,b.x2)-Math.max(a.x1,b.x1)+1), iy=Math.max(0,Math.min(a.y2,b.y2)-Math.max(a.y1,b.y1)+1), I=ix*iy;
+  const A=(a.x2-a.x1+1)*(a.y2-a.y1+1), B=(b.x2-b.x1+1)*(b.y2-b.y1+1);
+  return I/(A+B-I);
+}
+function samMerge(local,boxes,P){
+  const {w,h,labels,kept}=local, N=w*h, px=P.pxPerUm||null;
+  const byId=new Map(); kept.forEach(o=>byId.set(o.id,o));
+  const used=new Set(), out=[], apBoxes=[];
+  boxes.forEach(b=>{
+    const sx=b.w>0? w/b.w : 1, sy=b.h>0? h/b.h : 1;
+    const x1=Math.max(0,Math.floor(b.x1*sx)), y1=Math.max(0,Math.floor(b.y1*sy));
+    const x2=Math.min(w-1,Math.ceil(b.x2*sx)), y2=Math.min(h-1,Math.ceil(b.y2*sy));
+    if(x2<x1||y2<y1) return;
+    const cnt=new Map();
+    for(let y=y1;y<=y2;y++) for(let x=x1;x<=x2;x++){const l=labels[y*w+x]; if(l) cnt.set(l,(cnt.get(l)||0)+1);}
+    let best=0,bc=0;
+    cnt.forEach((c,l)=>{const o=byId.get(l); if(o&&c>=0.6*o.area&&c>bc){best=l;bc=c;}});
+    if(best){
+      if(used.has(best)) return;
+      used.add(best); out.push(Object.assign({},byId.get(best),{source:'sam',conf:b.c}));
+      return;
+    }
+    const bw=x2-x1+1, bh=y2-y1+1, major=Math.max(bw,bh), minor=Math.min(bw,bh);
+    const dEqPx=Math.sqrt(bw*bh);
+    if(px&&dEqPx<(P.minDiamUm||0)*px) return;
+    const box={x1,y1,x2,y2};
+    if(apBoxes.some(q=>samIoU(q,box)>0.6)) return;
+    apBoxes.push(box);
+    const a=major/2, c2=minor/2, per=Math.PI*(3*(a+c2)-Math.sqrt((3*a+c2)*(a+3*c2)));
+    const area=Math.PI/4*bw*bh, border=(x1<=0||y1<=0||x2>=w-1||y2>=h-1);
+    const o={id:-(apBoxes.length),area,cx:(x1+x2)/2,cy:(y1+y2)/2,border,asp:major/minor,circ:Math.min(1,4*Math.PI*area/(per*per)),
+             dEqPx,majorPx:major,source:'sam',conf:b.c,approx:true,box,cat:border?'borde':'aprox'};
+    if(px){o.dEqUm=o.dEqPx/px; o.majorUm=o.majorPx/px;}
+    out.push(o);
+  });
+  const counts={}; CAT_KEYS.forEach(c=>counts[c]=0);
+  let nParticles=0, covPx=0;
+  out.forEach(o=>{counts[o.cat]=(counts[o.cat]||0)+1; covPx+=o.area; if(o.cat!=='borde'&&o.cat!=='nocal') nParticles++;});
+  return Object.assign({},local,{kept:out,counts,nParticles,coveragePct:covPx/N*100,engine:'sam',warns:local.warns.slice(),issues:local.issues.slice()});
+}
+function engLabel(f){return f.engine==='sam'?('SAM 3.1'+(f.engineInfo?' ('+f.engineInfo+')':'')):'Local (algoritmo JS)';}
+// ==SAM-END==
+
+/* ---------- Interfaz del motor ---------- */
+state.engine='local'; state.samKey='';
+function samConfig(){
+  const concepts=[]; String($('samConcepts').value||'').split(',').forEach(s=>{s=s.trim(); if(s&&!concepts.includes(s)&&concepts.length<3) concepts.push(s);});
+  return {key:$('samKey').value.trim(), concepts, conf:parseFloat($('samConf').value)||0.5, url:($('samUrl').value||'').trim()||'https://api.meta.ai/v1/responses'};
+}
+function samImageDataUrl(){
+  const t=document.createElement('canvas'); t.width=state.base.width; t.height=state.base.height;
+  t.getContext('2d').putImageData(state.base,0,0);
+  return t.toDataURL('image/jpeg',0.9);
+}
+async function runSam(local,P){
+  const cfg=samConfig();
+  if(!local.pxPerUm) throw new Error('Calibre primero. Sin calibración no se puede medir y no se envía nada a SAM.');
+  if(typeof navigator!=='undefined'&&navigator.onLine===false) throw new Error('Sin internet. Use el motor Local o conéctese e intente de nuevo.');
+  if(!cfg.key) throw new Error('Escriba la clave de API de Meta.');
+  if(!cfg.concepts.length) throw new Error('Escriba al menos un concepto a buscar (por ejemplo: particle).');
+  if(!/^https:\/\//i.test(cfg.url)&&!/^http:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/i.test(cfg.url)) throw new Error('La URL del servicio debe empezar con https://');
+  if(!store.get(KEY_SAMOK,false)){
+    if(!confirm('La foto del microscopio se enviará por internet a los servidores de Meta para segmentarla. No envíe fotos con personas ni datos privados. ¿Continuar?')) throw new Error('Envío cancelado. Puede usar el motor Local.');
+    store.set(KEY_SAMOK,true);
+  }
+  const dataUrl=samImageDataUrl(), boxes=[], errs=[]; let ok=0;
+  for(const c of cfg.concepts){
+    try{ const b=await samCall(cfg.url,cfg.key,dataUrl,c); ok++; b.forEach(x=>boxes.push(x)); }
+    catch(e){ errs.push('"'+c+'": '+e.message); if(/clave|límite/.test(e.message)) break; }
+  }
+  if(!ok) throw new Error(errs.join(' | '));
+  const used=boxes.filter(b=>b.c==null||b.c>=cfg.conf);
+  const res=samMerge(local,used,P);
+  res.engineInfo={concepts:cfg.concepts,received:boxes.length,used:used.length,conf:cfg.conf};
+  errs.forEach(e=>res.warns.push('SAM falló para '+e));
+  if(!used.length) res.warns.push('SAM no devolvió objetos con estos conceptos y esta confianza. Puede deberse al concepto elegido (pruebe "particle" o "cell"), a una imagen sin partículas o a una confianza muy alta. No lo tome como confirmación de agua limpia.');
+  return res;
+}
+function analyze(){
+  if(!state.base) return Promise.resolve();
+  const btn=$('btnAnalyze'); btn.disabled=true; btn.textContent=state.engine==='sam'?'Consultando SAM 3.1...':'Procesando...';
+  return new Promise(done=>setTimeout(async()=>{
+    try{
+      const P={sens:+$('sens').value, polarity:$('pol').value, minDiamUm:parseFloat($('minD').value)||3, pxPerUm:pxPerUmNow()};
+      let res=segmentImage(state.base.data,state.base.width,state.base.height,P);
+      res.engine='local';
+      if(state.engine==='sam') res=await runSam(res,P);
+      res.depthUm=parseFloat($('depth').value)||null;
+      state.result=res; buildOverlay(res); renderAnalysis(res); redraw();
+    }catch(err){
+      console.error(err);
+      state.result=null; state.overlay=null; redraw();
+      $('addBox').style.display='none';
+      $('analysisOut').innerHTML='<div class="bad"><b>No se pudo analizar.</b> '+esc(err.message)+'</div>';
+    }
+    btn.disabled=false; btn.textContent='Analizar esta imagen'; done();
+  },30));
+}
+function enginesOf(){const o=[]; state.fields.forEach(f=>{const l=engLabel(f); if(o.indexOf(l)<0) o.push(l);}); return o;}
+function setEngine(e,user){
+  state.engine=e;
+  $('engLocal').classList.toggle('on',e==='local'); $('engSam').classList.toggle('on',e==='sam');
+  $('samBox').style.display=e==='sam'?'block':'none';
+  if(user){
+    if(state.fields.length&&!state.engineWarned){state.engineWarned=true; alert('Esta muestra ya tiene campos analizados con otro motor. El reporte los indicará, pero conviene usar el mismo motor en todos los campos.');}
+    state.result=null; state.overlay=null; $('analysisOut').innerHTML=''; $('addBox').style.display='none'; redraw();
+  }
+  updateNet(); if(user) saveSettings();
+}
+function updateNet(){
+  const on=(typeof navigator==='undefined')||navigator.onLine!==false;
+  $('netStatus').textContent=on?'Internet: disponible.':'Internet: no disponible. Use el motor Local.';
+}
+const KEY_SAMKEY='aquametrix.samkey.v22';
+function saveSettings(){
+  store.set(KEY_SET,{equip:$('equip').value,engine:state.engine,samConcepts:$('samConcepts').value,samConf:$('samConf').value,samUrl:$('samUrl').value});
+  try{
+    const k=$('samKey').value.trim();
+    if($('samRemember').checked&&k) localStorage.setItem(KEY_SAMKEY,k); else localStorage.removeItem(KEY_SAMKEY);
+  }catch(e){}
+}
+function initSettings(){
+  const s=store.get(KEY_SET,null)||{};
+  if(s.equip) $('equip').value=s.equip;
+  if(s.samConcepts) $('samConcepts').value=s.samConcepts;
+  if(s.samConf){$('samConf').value=s.samConf; $('samConfVal').textContent=s.samConf;}
+  if(s.samUrl) $('samUrl').value=s.samUrl;
+  try{const k=localStorage.getItem(KEY_SAMKEY); if(k){$('samKey').value=k; $('samRemember').checked=true;}}catch(e){}
+  ['equip','samConcepts','samConf','samUrl','samKey','samRemember'].forEach(id=>$(id).addEventListener('change',saveSettings));
+  $('samConf').addEventListener('input',()=>$('samConfVal').textContent=$('samConf').value);
+  $('engLocal').onclick=()=>setEngine('local',true);
+  $('engSam').onclick=()=>setEngine('sam',true);
+  if(typeof window!=='undefined'&&window.addEventListener){window.addEventListener('online',updateNet); window.addEventListener('offline',updateNet);}
+  setEngine(s.engine==='sam'?'sam':'local',false);
+}
+
+/* ---------- Eventos generales ---------- */
+$('btnCam').onclick=()=>$('fileCam').click();
+$('btnGal').onclick=()=>$('fileGal').click();
+$('fileCam').onchange=e=>{loadFile(e.target.files[0]);e.target.value='';};
+$('fileGal').onchange=e=>{loadFile(e.target.files[0]);e.target.value='';};
+$('modeAnalyze').onclick=()=>setMode('analyze');
+$('modeCal').onclick=()=>{ if(!state.base){alert('Primero cargue una foto (paso 1).');return;} setMode('cal'); };
+$('chkMask').onchange=redraw;
+$('sens').oninput=()=>$('sensVal').textContent=$('sens').value;
+$('btnAnalyze').onclick=analyze;
+
+(function init(){
+  initSettings();
+  loadProfiles(); updateCalUI(); updateVerdict(); renderHistory();
+})();
+</script>
+</body>
+</html>
